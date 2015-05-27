@@ -40,19 +40,33 @@ module.exports = function(options) {
   }, function(done) {
     async.waterfall([
       function checkBranch(callback) {
-        cmdRevParse = spawn('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
-        cmdRevParse.stderr.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
-        });
-        cmdRevParse.stdout.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
-          branch = data.toString().trim();
-          gutil.log(gutil.colors.yellow('Current branch: ' + branch));
-        });
-        cmdRevParse.on('exit', function(code) {
-          if (code !== 0) {
-            return callback(new gutil.PluginError('gulp-deploy-git', 'git rev-parse exited with code ' + code));
-          }
+        if (process.env['GIT_BRANCH'] !== undefined) {
+          cmdRevParse = spawn('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
+          cmdRevParse.stderr.on('data', function(data) {
+            if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
+          });
+          cmdRevParse.stdout.on('data', function(data) {
+            if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
+            branch = data.toString().trim();
+            gutil.log(gutil.colors.yellow('Current branch: ' + branch));
+          });
+          cmdRevParse.on('exit', function(code) {
+            if (code !== 0) {
+              return callback(new gutil.PluginError('gulp-deploy-git', 'git rev-parse exited with code ' + code));
+            }
+            var found = false;
+            options.branches.forEach(function (b) {
+              if (branch === b) {
+                found = true;
+              }
+            });
+            if (!found) {
+              return callback(new gutil.PluginError('gulp-deploy-git', 'branch ' + branch + ' is not configured to deploy'));
+            }
+            callback(null);
+          });
+        } else {
+          branch = process.env['GIT_BRANCH'];
           var found = false;
           options.branches.forEach(function (b) {
             if (branch === b) {
@@ -63,7 +77,7 @@ module.exports = function(options) {
             return callback(new gutil.PluginError('gulp-deploy-git', 'branch ' + branch + ' is not configured to deploy'));
           }
           callback(null);
-        });
+        }
       },
       function gitClone(callback) {
         gutil.log(gutil.colors.yellow('Cloning remote deployment repository'));
