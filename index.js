@@ -21,6 +21,8 @@ module.exports = function(options) {
     return this.emit('error', new gutil.PluginError('gulp-deploy-git', ''));
   }
 
+  options.prefix = options.prefix.replace('/', path.sep);
+
   var self = null;
   var branch = null;
   var files = [];
