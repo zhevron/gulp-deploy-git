@@ -124,8 +124,10 @@ module.exports = function(options) {
           files.forEach(function(file) {
             stats = fs.lstatSync(file.path);
             if (stats.isDirectory()) {
+              if (options.debug) gutil.log('skipping: ' + gutil.colors.magenta(file.path));
               return;
             }
+            if (options.debug) gutil.log('copying: ' + gutil.colors.magenta(file.path) + ' to ' + gutil.colors.magenta(file.dest));
             mkdirp.sync(path.dirname(file.dest));
             fs.writeFileSync(file.dest, fs.readFileSync(file.path));
           })
