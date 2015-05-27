@@ -40,7 +40,7 @@ module.exports = function(options) {
   }, function(done) {
     async.waterfall([
       function checkBranch(callback) {
-        if (process.env['GIT_BRANCH'] !== undefined) {
+        if (process.env['GIT_BRANCH'] === undefined) {
           cmdRevParse = spawn('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
           cmdRevParse.stderr.on('data', function(data) {
             if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
