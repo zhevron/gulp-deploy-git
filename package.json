@@ -1,6 +1,6 @@
 {
   "name": "gulp-deploy-git",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Deploy Git projects to remote Git repositories.",
   "author": "Thomas Lokshall <thomas@lokshall.no>",
   "license": "MIT",

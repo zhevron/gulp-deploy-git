@@ -29,8 +29,8 @@ module.exports = function(options) {
   return through.obj(function(file, enc, callback) {
     self = this;
     var p = path.normalize(path.relative(file.cwd, file.path));
-    if (options.prefix.length > 0) {
-      p = path.normalize(path.relative(file.cwd + path.sep + options.prefix, file.path));
+    if (options.prefix.length > 0 && p.indexOf(options.prefix) === 0) {
+      p = p.substr(options.prefix.length + 1);
     }
     files.push({
       path: file.path,
