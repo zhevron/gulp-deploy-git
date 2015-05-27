@@ -45,6 +45,14 @@ gulp.task('deploy', function() {
 
 ## Options
 
+- `prefix`
+
+  Prefix to strip from the relative path names when copying source files.
+
+- `message`
+
+  The commit message to use when pushing to the remote deployment repository.
+
 - `repository`
 
 	The remote Git repository to push to.

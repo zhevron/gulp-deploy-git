@@ -11,6 +11,7 @@ var through  = require('through2');
 module.exports = function(options) {
   options = assign({}, {
     prefix: '',
+    message: '',
     repository: '',
     branches: ['master'],
     debug: false
@@ -22,7 +23,6 @@ module.exports = function(options) {
 
   var self = null;
   var branch = null;
-  var message = null;
   var files = [];
   var repoPath = path.normalize(path.join(process.cwd(), 'deploy-' + Date.now()));
 
@@ -132,24 +132,28 @@ module.exports = function(options) {
         });
       },
       function gitLog(callback) {
-        var cmdLog = spawn('git', ['log', '-1', '--oneline']);
-        cmdLog.stderr.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
-        });
-        cmdLog.stdout.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
-          message = data.toString().trim();
-        });
-        cmdLog.on('exit', function(code) {
-          if (code !== 0) {
-            return callback(new gutil.PluginError('gulp-deploy-git', 'git log exited with code ' + code));
-          }
+        if (options.message.length === 0) {
+          var cmdLog = spawn('git', ['log', '-1', '--oneline']);
+          cmdLog.stderr.on('data', function(data) {
+            if (options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
+          });
+          cmdLog.stdout.on('data', function(data) {
+            if (options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
+            message = data.toString().trim();
+          });
+          cmdLog.on('exit', function(code) {
+            if (code !== 0) {
+              return callback(new gutil.PluginError('gulp-deploy-git', 'git log exited with code ' + code));
+            }
+            callback(null);
+          });
+        } else {
           callback(null);
-        });
+        }
       },
       function gitCommit(callback) {
         gutil.log(gutil.colors.yellow('Committing changes to deployment repository'));
-        var cmdCommit = spawn('git', ['commit', '-m', message], {cwd: repoPath});
+        var cmdCommit = spawn('git', ['commit', '-m', options.message], {cwd: repoPath});
         cmdCommit.stderr.on('data', function(data) {
           if (options.debug) gutil.log(gutil.colors.magenta('git commit: ') + data.toString().trim());
         });
