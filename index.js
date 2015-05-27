@@ -122,7 +122,7 @@ module.exports = function(options) {
         gutil.log(gutil.colors.yellow('Copying source files to deployment folder'));
         try {
           files.forEach(function(file) {
-            stats = fs.lstatSync(file);
+            stats = fs.lstatSync(file.path);
             if (stats.isDirectory()) {
               return;
             }
