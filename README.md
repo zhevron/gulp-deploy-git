@@ -52,14 +52,19 @@ gulp.task('deploy', function() {
 - `message`
 
   The commit message to use when pushing to the remote deployment repository.
+  If omitted, Git will be used to determine the last commit message and use that.
 
 - `repository`
 
 	The remote Git repository to push to.
 
+- `remoteBranch`
+
+  The remote branch to clone and push to. Defaults to `master`.
+
 - `branches`
 
-	Only trigger deployment on the following branch(es).
+	Only trigger deployment on the following branch(es). Defaults to `master`.
 
 - `debug`
 

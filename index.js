@@ -13,6 +13,7 @@ module.exports = function(options) {
     prefix: '',
     message: '',
     repository: '',
+    remoteBranch: 'master',
     branches: ['master'],
     debug: false
   }, options);
@@ -83,7 +84,7 @@ module.exports = function(options) {
       },
       function gitClone(callback) {
         gutil.log(gutil.colors.yellow('Cloning remote deployment repository'));
-        var cmdClone = spawn('git', ['clone', options.repository, repoPath]);
+        var cmdClone = spawn('git', ['clone', '-b', options.remoteBranch, '--single-branch', options.repository, repoPath]);
         cmdClone.on('data', function(data) { gutil.log(data.toString()); });
         cmdClone.stderr.on('data', function(data) {
           if (options.debug) gutil.log(gutil.colors.magenta('git clone: ') + data.toString().trim());
@@ -191,7 +192,7 @@ module.exports = function(options) {
       },
       function gitPush(callback) {
         gutil.log(gutil.colors.yellow('Pushing to remote deployment repository'));
-        var cmdPush = spawn('git', ['push'], {cwd: repoPath});
+        var cmdPush = spawn('git', ['push', 'origin', options.remoteBranch], {cwd: repoPath});
         cmdPush.stderr.on('data', function(data) {
           if (options.debug) gutil.log(gutil.colors.magenta('git push: ') + data.toString().trim());
         });
