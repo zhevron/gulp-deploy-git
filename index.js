@@ -237,7 +237,7 @@ module.exports = function(options) {
           self.emit('error', err);
         }
       }
-      done(err);
+      done(null);
     });
   });
 }
