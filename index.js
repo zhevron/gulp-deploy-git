@@ -83,7 +83,7 @@ module.exports = function(options) {
             }
           });
           if (!found) {
-            return callback(new gutil.PluginError('gulp-deploy-git', 'branch ' + branch + ' is not configured to deploy'));
+            return callback('doNotDeployBranch');
           }
           callback(null);
         }
@@ -191,8 +191,7 @@ module.exports = function(options) {
         });
         cmdCommit.on('exit', function(code) {
           if (code === 1) {
-            gutil.log(gutil.colors.magenta('No changes to deployment files, skipping'));
-            return callback(null);
+            return callback('noChanges');
           }
           if (code !== 0) {
             return callback(new gutil.PluginError('gulp-deploy-git', 'git commit exited with code ' + code));
@@ -227,7 +226,16 @@ module.exports = function(options) {
       }
     ], function(err) {
       if (err) {
-        self.emit('error', err);
+        switch (err) {
+        case 'doNotDeployBranch':
+          gutil.log(gutil.colors.magenta('Branch ' + branch + ' not configured to deploy, skipping'));
+          break;
+        case 'noChanges':
+          gutil.log(gutil.colors.magenta('No changes to deployment files, skipping'));
+          break;
+        default:
+          self.emit('error', err);
+        }
       }
       done(err);
     });
