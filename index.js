@@ -51,6 +51,9 @@ module.exports = function(options) {
           cmdRevParse.stdout.on('data', function(data) {
             if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
             branch = data.toString().trim();
+            if (branch.indexOf('/') > -1) {
+              branch = branch.substr(branch.lastIndexOf('/') + 1);
+            }
             gutil.log(gutil.colors.yellow('Current branch: ' + branch));
           });
           cmdRevParse.on('exit', function(code) {
@@ -70,6 +73,9 @@ module.exports = function(options) {
           });
         } else {
           branch = process.env['GIT_BRANCH'];
+          if (branch.indexOf('/') > -1) {
+            branch = branch.substr(branch.lastIndexOf('/') + 1);
+          }
           var found = false;
           options.branches.forEach(function (b) {
             if (branch === b) {
