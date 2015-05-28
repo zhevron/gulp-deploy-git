@@ -184,6 +184,10 @@ module.exports = function(options) {
           if (options.debug) gutil.log(gutil.colors.magenta('git commit: ') + data.toString().trim());
         });
         cmdCommit.on('exit', function(code) {
+          if (code === 1) {
+            gutil.log(gutil.colors.magenta('No changes to deployment files, skipping'));
+            return callback(null);
+          }
           if (code !== 0) {
             return callback(new gutil.PluginError('gulp-deploy-git', 'git commit exited with code ' + code));
           }
