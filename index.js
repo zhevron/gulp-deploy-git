@@ -18,10 +18,6 @@ module.exports = function(options) {
     debug: false
   }, options);
 
-  if (options.repository.length === 0) {
-    return this.emit('error', new gutil.PluginError('gulp-deploy-git', ''));
-  }
-
   options.prefix = options.prefix.replace('/', path.sep);
 
   var self = null;
@@ -58,7 +54,7 @@ module.exports = function(options) {
           });
           cmdRevParse.on('exit', function(code) {
             if (code !== 0) {
-              return callback(new gutil.PluginError('gulp-deploy-git', 'git rev-parse exited with code ' + code));
+              return callback('git rev-parse exited with code ' + code);
             }
             var found = false;
             options.branches.forEach(function (b) {
@@ -67,7 +63,7 @@ module.exports = function(options) {
               }
             });
             if (!found) {
-              return callback(new gutil.PluginError('gulp-deploy-git', 'branch ' + branch + ' is not configured to deploy'));
+              return callback('branch ' + branch + ' is not configured to deploy');
             }
             callback(null);
           });
@@ -100,7 +96,7 @@ module.exports = function(options) {
         });
         cmdClone.on('close', function(code) {
           if (code !== 0) {
-            return callback(new gutil.PluginError('gulp-deploy-git', 'git clone exited with code ' + code));
+            return callback('git clone exited with code ' + code);
           }
           return callback(null);
         });
@@ -155,7 +151,7 @@ module.exports = function(options) {
         });
         cmdAdd.on('exit', function(code) {
           if (code !== 0) {
-            return callback(new gutil.PluginError('gulp-deploy-git', 'git add exited with code ' + code));
+            return callback('git add exited with code ' + code);
           }
           return callback(null);
         });
@@ -172,7 +168,7 @@ module.exports = function(options) {
           });
           cmdLog.on('exit', function(code) {
             if (code !== 0) {
-              return callback(new gutil.PluginError('gulp-deploy-git', 'git log exited with code ' + code));
+              return callback('git log exited with code ' + code);
             }
             callback(null);
           });
@@ -194,7 +190,7 @@ module.exports = function(options) {
             return callback('noChanges');
           }
           if (code !== 0) {
-            return callback(new gutil.PluginError('gulp-deploy-git', 'git commit exited with code ' + code));
+            return callback('git commit exited with code ' + code);
           }
           return callback(null);
         });
@@ -210,7 +206,7 @@ module.exports = function(options) {
         });
         cmdPush.on('exit', function(code) {
           if (code !== 0) {
-            return callback(new gutil.PluginError('gulp-deploy-git', 'git push exited with code ' + code));
+            return callback('git push exited with code ' + code);
           }
           return callback(null);
         });
@@ -219,7 +215,7 @@ module.exports = function(options) {
         gutil.log(gutil.colors.yellow('Removing local deployment folder'));
         rimraf(repoPath, function(err) {
           if (err) {
-            return callback(new gutil.PluginError('gulp-deploy-git', err));
+            return callback(err);
           }
           return callback(null);
         });
@@ -234,7 +230,7 @@ module.exports = function(options) {
           gutil.log(gutil.colors.magenta('No changes to deployment files, skipping'));
           break;
         default:
-          self.emit('error', err);
+          self.emit('error', new gutil.PluginError('gulp-deploy-git', err));
         }
       }
       done(null);
