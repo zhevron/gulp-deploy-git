@@ -70,7 +70,7 @@ module.exports = function(options) {
         } else {
           branch = process.env['GIT_BRANCH'];
           if (branch.indexOf('refs/heads/') > -1) {
-            branch = branch.substr(branch.lastIndexOf('refs/heads/') + 12);
+            branch = branch.substr(branch.lastIndexOf('refs/heads/') + 11);
           }
           var found = false;
           options.branches.forEach(function (b) {
