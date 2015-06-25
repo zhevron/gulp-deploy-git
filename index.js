@@ -15,6 +15,7 @@ module.exports = function(options) {
     repository: '',
     remoteBranch: 'master',
     branches: ['master'],
+    verbose: false,
     debug: false
   }, options);
 
@@ -28,8 +29,10 @@ module.exports = function(options) {
   return through.obj(function(file, enc, callback) {
     self = this;
     var p = path.normalize(path.relative(file.cwd, file.path));
+    if (options.debug) gutil.log(gutil.colors.magenta('processing file: ') + p);
     if (options.prefix.length > 0 && p.indexOf(options.prefix) === 0) {
       p = p.substr(options.prefix.length + 1);
+      if (options.debug) gutil.log(gutil.colors.magenta('  stripped prefix to: ') + p);
     }
     files.push({
       path: file.path,
@@ -42,10 +45,10 @@ module.exports = function(options) {
         if (process.env['GIT_BRANCH'] === undefined) {
           cmdRevParse = spawn('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
           cmdRevParse.stderr.on('data', function(data) {
-            if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
+            if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
           });
           cmdRevParse.stdout.on('data', function(data) {
-            if (options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
+            if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git rev-parse: ') + data.toString().trim());
             branch = data.toString().trim();
             if (branch.indexOf('refs/heads/') > -1) {
               branch = branch.substr(branch.lastIndexOf('refs/heads/') + 1);
@@ -63,7 +66,7 @@ module.exports = function(options) {
               }
             });
             if (!found) {
-              return callback('branch ' + branch + ' is not configured to deploy');
+              return callback('Branch ' + branch + ' is not configured to deploy');
             }
             callback(null);
           });
@@ -89,10 +92,10 @@ module.exports = function(options) {
         var cmdClone = spawn('git', ['clone', '-b', options.remoteBranch, '--single-branch', options.repository, repoPath]);
         cmdClone.on('data', function(data) { gutil.log(data.toString()); });
         cmdClone.stderr.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git clone: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git clone: ') + data.toString().trim());
         });
         cmdClone.stdout.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git clone: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git clone: ') + data.toString().trim());
         });
         cmdClone.on('close', function(code) {
           if (code !== 0) {
@@ -129,10 +132,10 @@ module.exports = function(options) {
           files.forEach(function(file) {
             stats = fs.lstatSync(file.path);
             if (stats.isDirectory()) {
-              if (options.debug) gutil.log('skipping: ' + gutil.colors.magenta(file.path));
+              if (options.verbose || options.debug) gutil.log('skipping: ' + gutil.colors.magenta(file.path));
               return;
             }
-            if (options.debug) gutil.log('copying: ' + gutil.colors.magenta(file.path) + ' to ' + gutil.colors.magenta(file.dest));
+            if (options.verbose || options.debug) gutil.log('copying: ' + gutil.colors.magenta(file.path) + ' to ' + gutil.colors.magenta(file.dest));
             mkdirp.sync(path.dirname(file.dest));
             fs.writeFileSync(file.dest, fs.readFileSync(file.path));
           })
@@ -144,10 +147,10 @@ module.exports = function(options) {
       function gitAdd(callback) {
         var cmdAdd = spawn('git', ['add', '--all', '.'], {cwd: repoPath});
         cmdAdd.stderr.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git add: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git add: ') + data.toString().trim());
         });
         cmdAdd.stdout.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git add: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git add: ') + data.toString().trim());
         });
         cmdAdd.on('exit', function(code) {
           if (code !== 0) {
@@ -160,10 +163,10 @@ module.exports = function(options) {
         if (options.message.length === 0) {
           var cmdLog = spawn('git', ['log', '-1', '--oneline']);
           cmdLog.stderr.on('data', function(data) {
-            if (options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
+            if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
           });
           cmdLog.stdout.on('data', function(data) {
-            if (options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
+            if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
             message = data.toString().trim();
           });
           cmdLog.on('exit', function(code) {
@@ -180,10 +183,10 @@ module.exports = function(options) {
         gutil.log(gutil.colors.yellow('Committing changes to deployment repository'));
         var cmdCommit = spawn('git', ['commit', '-m', options.message], {cwd: repoPath});
         cmdCommit.stderr.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git commit: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git commit: ') + data.toString().trim());
         });
         cmdCommit.stdout.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git commit: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git commit: ') + data.toString().trim());
         });
         cmdCommit.on('exit', function(code) {
           if (code === 1) {
@@ -199,10 +202,10 @@ module.exports = function(options) {
         gutil.log(gutil.colors.yellow('Pushing to remote deployment repository'));
         var cmdPush = spawn('git', ['push', 'origin', options.remoteBranch], {cwd: repoPath});
         cmdPush.stderr.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git push: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git push: ') + data.toString().trim());
         });
         cmdPush.stdout.on('data', function(data) {
-          if (options.debug) gutil.log(gutil.colors.magenta('git push: ') + data.toString().trim());
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git push: ') + data.toString().trim());
         });
         cmdPush.on('exit', function(code) {
           if (code !== 0) {

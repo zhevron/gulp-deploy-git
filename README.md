@@ -66,9 +66,14 @@ gulp.task('deploy', function() {
 
 	Only trigger deployment on the following branch(es). Defaults to `master`.
 
+- `verbose`
+
+  Verbose mode. Will show output from all git commands run. Defaults to `false`.
+
 - `debug`
 
-  Debugging mode. Will show output from all git commands run.
+  Debugging mode. A lot of extra output to debug deployment issues.
+  Implies `verbose`. Defaults to `false`.
 
 ## Errors
 
