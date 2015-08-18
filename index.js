@@ -55,7 +55,7 @@ module.exports = function(options) {
             }
             gutil.log(gutil.colors.yellow('Current branch: ' + branch));
           });
-          cmdRevParse.on('exit', function(code) {
+          cmdRevParse.on('close', function(code) {
             if (code !== 0) {
               return callback('git rev-parse exited with code ' + code);
             }
@@ -152,7 +152,7 @@ module.exports = function(options) {
         cmdAdd.stdout.on('data', function(data) {
           if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git add: ') + data.toString().trim());
         });
-        cmdAdd.on('exit', function(code) {
+        cmdAdd.on('close', function(code) {
           if (code !== 0) {
             return callback('git add exited with code ' + code);
           }
@@ -169,7 +169,7 @@ module.exports = function(options) {
             if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
             message = data.toString().trim();
           });
-          cmdLog.on('exit', function(code) {
+          cmdLog.on('close', function(code) {
             if (code !== 0) {
               return callback('git log exited with code ' + code);
             }
@@ -188,7 +188,7 @@ module.exports = function(options) {
         cmdCommit.stdout.on('data', function(data) {
           if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git commit: ') + data.toString().trim());
         });
-        cmdCommit.on('exit', function(code) {
+        cmdCommit.on('close', function(code) {
           if (code === 1) {
             return callback('noChanges');
           }
@@ -207,7 +207,7 @@ module.exports = function(options) {
         cmdPush.stdout.on('data', function(data) {
           if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git push: ') + data.toString().trim());
         });
-        cmdPush.on('exit', function(code) {
+        cmdPush.on('close', function(code) {
           if (code !== 0) {
             return callback('git push exited with code ' + code);
           }
