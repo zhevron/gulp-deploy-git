@@ -167,7 +167,7 @@ module.exports = function(options) {
           });
           cmdLog.stdout.on('data', function(data) {
             if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git log: ') + data.toString().trim());
-            message = data.toString().trim();
+            options.message = data.toString().trim();
           });
           cmdLog.on('close', function(code) {
             if (code !== 0) {
