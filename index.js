@@ -66,7 +66,7 @@ module.exports = function(options) {
               }
             });
             if (!found) {
-              return callback('Branch ' + branch + ' is not configured to deploy');
+              return callback('doNotDeployBranch');
             }
             callback(null);
           });
