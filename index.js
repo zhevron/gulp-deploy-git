@@ -218,17 +218,21 @@ module.exports = function(options) {
           }
           return callback(null);
         });
-      },
-      function removeRepository(callback) {
-        gutil.log(gutil.colors.yellow('Removing local deployment folder'));
-        rimraf(repoPath, function(err) {
-          if (err) {
-            return callback(err);
-          }
-          return callback(null);
-        });
       }
-    ], function(err) {
+  ], function(err) {
+      console.log('ERROR VAR: ' + err);
+      try {
+        var repoStat = fs.lstatSync(repoPath);
+        if (repoStat.isDirectory()) {
+          gutil.log(gutil.colors.yellow('Removing local deployment folder'));
+          rimraf(repoPath, function(err) {
+            if (err) {
+              gutil.log(gutil.colors.red('Failed to remove local deployment folder'));
+            }
+          });
+        }
+      } catch (err) {
+      }
       if (err) {
         switch (err) {
         case 'doNotDeployBranch':
