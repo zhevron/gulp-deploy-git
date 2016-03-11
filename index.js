@@ -219,7 +219,6 @@ module.exports = function(options) {
         });
       }
   ], function(err) {
-      console.log('ERROR VAR: ' + err);
       try {
         var repoStat = fs.lstatSync(repoPath);
         if (repoStat.isDirectory()) {
