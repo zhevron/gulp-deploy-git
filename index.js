@@ -41,8 +41,7 @@ module.exports = function(options) {
       path: file.path,
       dest: path.join(repoPath, p)
     });
-    this.push(file);
-    callback(null);
+    callback(null, file);
   }, function(done) {
     async.waterfall([
       function checkBranch(callback) {
