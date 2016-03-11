@@ -23,7 +23,6 @@ module.exports = function(options) {
 
   const PLUGIN_NAME = 'gulp-deploy-git';
 
-  var self = null;
   var branch = null;
   var files = [];
   var repoPath = path.normalize(path.join(process.cwd(), 'deploy-' + Date.now()));
@@ -33,7 +32,6 @@ module.exports = function(options) {
       this.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Buffers are not supported'));
       return callback(null);
     }
-    self = this;
     var p = path.normalize(path.relative(file.cwd, file.path));
     if (options.debug) gutil.log(gutil.colors.magenta('processing file: ') + p);
     if (options.prefix.length > 0 && p.indexOf(options.prefix) === 0) {
@@ -240,7 +238,7 @@ module.exports = function(options) {
           gutil.log(gutil.colors.magenta('No changes to deployment files, skipping'));
           break;
         default:
-          self.emit('error', new gutil.PluginError(PLUGIN_NAME, err));
+          done(new gutil.PluginError(PLUGIN_NAME, err));
         }
       }
       done(null);
