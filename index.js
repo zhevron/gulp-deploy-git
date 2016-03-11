@@ -29,8 +29,7 @@ module.exports = function(options) {
 
   return through.obj(function(file, enc, callback) {
     if (file.isBuffer()) {
-      this.emit('error', new gutil.PluginError(PLUGIN_NAME, 'Buffers are not supported'));
-      return callback(null);
+      return callback('Buffers are not supported');
     }
     var p = path.normalize(path.relative(file.cwd, file.path));
     if (options.debug) gutil.log(gutil.colors.magenta('processing file: ') + p);
