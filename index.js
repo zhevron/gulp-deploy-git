@@ -38,6 +38,7 @@ module.exports = function(options) {
       path: file.path,
       dest: path.join(repoPath, p)
     });
+    this.push(file);
     callback(null);
   }, function(done) {
     async.waterfall([
