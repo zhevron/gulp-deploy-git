@@ -18,7 +18,7 @@ Install the package with npm and add it to your development dependencies:
 var deploy = require('gulp-deploy-git');
 
 gulp.task('deploy', function() {
-  return gulp.src('dist/**/*')
+  return gulp.src('dist/**/*', { read: false })
     .pipe(deploy({
       repository: 'https://github.com/zhevron/gulp-deploy-git.git'
     }));
@@ -31,7 +31,7 @@ gulp.task('deploy', function() {
 var deploy = require('gulp-deploy-git');
 
 gulp.task('deploy', function() {
-  return gulp.src('dist/**/*')
+  return gulp.src('dist/**/*', { read: false })
     .pipe(deploy({
       repository: 'https://username@github.com/username/my-repo.git',
       branches:   ['master']
