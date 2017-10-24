@@ -206,11 +206,15 @@ module.exports = function(options) {
         if (!options.version) {
           return callback(null);
         }
-        const packageJson = files.reduce(function(prev, file) {
+        const packageJson = files.reduce(function(path, file) {
           if (file.path.indexOf('package.json') !== -1) {
-            return file.path
+            path = file.path
           }
+          return path
         }, '');
+        if (packageJson === '') {
+          return callback('package.json is required if option version is true');
+        }
         var packageContent = fs.readFileSync(packageJson, 'utf8');
         var json = JSON.parse(packageContent.toString());
         var version = json.version;
