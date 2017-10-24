@@ -202,7 +202,7 @@ module.exports = function(options) {
           return callback(null);
         });
       },
-      function version(callback) {
+      function gitTag(callback) {
         if (!options.version) {
           return callback(null);
         }
@@ -233,7 +233,7 @@ module.exports = function(options) {
           return callback(null);
         });
       },
-      function gitPushVersion(callback) {
+      function gitPushTag(callback) {
         if (!options.version) {
           return callback(null);
         }
