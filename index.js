@@ -15,6 +15,7 @@ module.exports = function(options) {
     repository: '',
     remoteBranch: 'master',
     branches: ['master'],
+    version: false,
     verbose: false,
     debug: false
   }, options);
@@ -197,6 +198,52 @@ module.exports = function(options) {
           }
           if (code !== 0) {
             return callback('git commit exited with code ' + code);
+          }
+          return callback(null);
+        });
+      },
+      function version(callback) {
+        if (!options.version) {
+          return callback(null);
+        }
+        const packageJson = files.reduce(function(prev, file) {
+          if (file.path.indexOf('package.json') !== -1) {
+            return file.path
+          }
+        }, '');
+        var packageContent = fs.readFileSync(packageJson, 'utf8');
+        var json = JSON.parse(packageContent.toString());
+        var version = json.version;
+        gutil.log(gutil.colors.yellow('Tag version ' + version));
+        var cmdTag = spawn('git', ['tag', '-a', 'v' + version, '-m', 'Version ' + version], {cwd: repoPath});
+        cmdTag.stderr.on('data', function(data) {
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git tag: ') + data.toString().trim());
+        });
+        cmdTag.stdout.on('data', function(data) {
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git tag: ') + data.toString().trim());
+        });
+        cmdTag.on('close', function(code) {
+          if (code !== 0) {
+            return callback('git tag exited with code ' + code);
+          }
+          return callback(null);
+        });
+      },
+      function gitPushVersion(callback) {
+        if (!options.version) {
+          return callback(null);
+        }
+        gutil.log(gutil.colors.yellow('Pushing version to remote deployment repository'));
+        var cmdPush = spawn('git', ['push', 'origin', '--tags'], {cwd: repoPath});
+        cmdPush.stderr.on('data', function(data) {
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git push verion: ') + data.toString().trim());
+        });
+        cmdPush.stdout.on('data', function(data) {
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git push verion: ') + data.toString().trim());
+        });
+        cmdPush.on('close', function(code) {
+          if (code !== 0) {
+            return callback('git push verion exited with code ' + code);
           }
           return callback(null);
         });
