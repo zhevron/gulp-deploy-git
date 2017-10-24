@@ -66,6 +66,11 @@ gulp.task('deploy', function() {
 
 	Only trigger deployment on the following branch(es). Defaults to `master`.
 
+- `version`
+
+	Tag version from package.json. Defaults to `false`.
+
+
 - `verbose`
 
   Verbose mode. Will show output from all git commands run. Defaults to `false`.
