@@ -15,6 +15,7 @@ module.exports = function(options) {
     repository: '',
     remoteBranch: 'master',
     branches: ['master'],
+    ignoreRemoval: false,
     verbose: false,
     debug: false
   }, options);
@@ -148,7 +149,12 @@ module.exports = function(options) {
         }
       },
       function gitAdd(callback) {
-        var cmdAdd = spawn('git', ['add', '--all', '.'], {cwd: repoPath});
+        var removalType = '--all';
+        if (options.ignoreRemoval){
+          removalType = '--ignore-removal';
+          if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git add: ignoring deleted files'));
+        }
+        var cmdAdd = spawn('git', ['add', removalType, '.'], {cwd: repoPath});
         cmdAdd.stderr.on('data', function(data) {
           if (options.verbose || options.debug) gutil.log(gutil.colors.magenta('git add: ') + data.toString().trim());
         });
