@@ -66,6 +66,12 @@ gulp.task('deploy', function() {
 
 	Only trigger deployment on the following branch(es). Defaults to `master`.
 
+- `ignoreRemoval`
+
+  Based on `git add`'s `--ignore-removal` option. 
+  If `true`, files will not be removed from the remote repo. If `false`, files will be removed from the remote repo if they do not exist in the source files.
+  Defaults to `false`.
+
 - `verbose`
 
   Verbose mode. Will show output from all git commands run. Defaults to `false`.
